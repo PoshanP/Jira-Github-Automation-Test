@@ -1,0 +1,40 @@
+
+  # Jira-triggered test automation workflow
+
+  name: CI
+
+  on:
+    # Existing triggers
+    push:
+      branches: [ "main" ]
+    pull_request:
+      branches: [ "main" ]
+    workflow_dispatch:
+
+    # Jira automation trigger
+    repository_dispatch:
+      types: [run-test]
+
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/checkout@v4
+
+        # Show Jira data if triggered by Jira
+        - name: Jira trigger info
+          if: github.event_name == 'repository_dispatch'
+          run: |
+            echo "🎫 Triggered by Jira!"
+            echo "Issue: ${{ github.event.client_payload.issue_key }}"
+            echo "Summary: ${{ github.event.client_payload.summary }}"
+            echo "Labels: ${{ github.event.client_payload.labels }}"
+
+        - name: Run a one-line script
+          run: echo Hello, world!
+
+        - name: Run a multi-line script
+          run: |
+            echo Add other actions to build,
+            echo test, and deploy your project.
